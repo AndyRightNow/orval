@@ -594,7 +594,7 @@ export const Verbs = {
 
 export type ImportOpenApi = {
   data: Record<string, unknown | OpenAPIObject>;
-  input: InputOptions;
+  input: NormalizedInputOptions;
   output: NormalizedOutputOptions;
   target: string;
   workspace: string;
