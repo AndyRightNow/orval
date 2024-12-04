@@ -26,6 +26,7 @@ import {
   OutputClient,
   OutputHttpClient,
   OutputMode,
+  OutputOptions,
   QueryOptions,
   RefComponentSuffix,
   SwaggerParserOptions,
@@ -91,19 +92,6 @@ export const normalizeOptions = async (
     workspace,
   );
 
-  let mock = outputOptions.mock ?? globalOptions.mock;
-  if (typeof mock === 'boolean' && mock) {
-    mock = DEFAULT_MOCK_OPTIONS;
-  } else if (isFunction(mock)) {
-  } else if (!mock) {
-    mock = undefined;
-  } else {
-    mock = {
-      ...DEFAULT_MOCK_OPTIONS,
-      ...mock,
-    };
-  }
-
   const defaultFileExtension = '.ts';
 
   const globalQueryOptions: NormalizedQueryOptions = {
@@ -146,7 +134,7 @@ export const normalizeOptions = async (
       httpClient:
         outputOptions.httpClient ?? httpClient ?? OutputHttpClient.AXIOS,
       mode: normalizeOutputMode(outputOptions.mode ?? mode),
-      mock,
+      mock: normalizeMock(outputOptions.mock ?? globalOptions.mock),
       clean: outputOptions.clean ?? clean ?? false,
       docs: outputOptions.docs ?? false,
       prettier: outputOptions.prettier ?? prettier ?? false,
@@ -320,6 +308,7 @@ export const normalizeOptions = async (
       allParamsOptional: outputOptions.allParamsOptional ?? false,
       urlEncodeParameters: outputOptions.urlEncodeParameters ?? false,
       optionsParamRequired: outputOptions.optionsParamRequired ?? false,
+      removeUnusedSchemas: outputOptions.removeUnusedSchemas ?? false,
     },
     hooks: options.hooks ? normalizeHooks(options.hooks) : {},
   };
@@ -337,6 +326,19 @@ export const normalizeOptions = async (
   }
 
   return normalizedOptions;
+};
+
+const normalizeMock = (mock: OutputOptions['mock']) => {
+  if (typeof mock === 'boolean' && mock) {
+    return DEFAULT_MOCK_OPTIONS;
+  } else if (isFunction(mock) || !mock) {
+    return undefined;
+  } else {
+    return {
+      ...DEFAULT_MOCK_OPTIONS,
+      ...mock,
+    };
+  }
 };
 
 const parserDefaultOptions = {
