@@ -40,31 +40,32 @@ export interface NormalizedOptions {
   hooks: NormalizedHookOptions;
 }
 
-export type NormalizedOutputOptions = {
-  workspace?: string;
-  target?: string;
-  schemas?: string;
-  fileExtension: string;
-  mode: OutputMode;
-  mock?: GlobalMockOptions | ClientMockBuilder;
-  override: NormalizedOverrideOutput;
-  client: OutputClient | OutputClientFunc;
-  httpClient: OutputHttpClient;
-  clean: boolean | string[];
-  docs: boolean | OutputDocsOptions;
-  prettier: boolean;
-  tslint: boolean;
-  biome: boolean;
-  tsconfig?: Tsconfig;
-  packageJson?: PackageJson;
-  headers: boolean;
-  indexFiles: boolean;
-  baseUrl?: string | BaseUrlFromSpec | BaseUrlFromConstant;
-  allParamsOptional: boolean;
-  urlEncodeParameters: boolean;
-  unionAddMissingProperties: boolean;
-  optionsParamRequired: boolean;
-};
+type PreservedOutputOptionsKeys =
+  | 'workspace'
+  | 'target'
+  | 'schemas'
+  | 'baseUrl';
+
+export type NormalizedOutputOptions = Pick<
+  OutputOptions,
+  PreservedOutputOptionsKeys
+> &
+  Required<
+    Omit<
+      OutputOptions,
+      | PreservedOutputOptionsKeys
+      // Exclude normalized props
+      | 'mock'
+      | 'tsconfig'
+      | 'packageJson'
+      | 'override'
+    >
+  > & {
+    mock?: GlobalMockOptions | ClientMockBuilder;
+    tsconfig?: Tsconfig;
+    packageJson?: PackageJson;
+    override: NormalizedOverrideOutput;
+  };
 
 export type NormalizedParamsSerializerOptions = {
   qs?: Record<string, any>;
@@ -151,14 +152,13 @@ export type NormalizedOperationOptions = {
   requestOptions?: object | boolean;
 };
 
-export type NormalizedInputOptions = {
-  target: string | Record<string, unknown> | OpenAPIObject;
-  validation: boolean;
-  override: OverrideInput;
-  converterOptions: swagger2openapi.Options;
-  parserOptions: SwaggerParserOptions;
-  filters?: InputFiltersOption;
-};
+type PreservedInputOptionsKeys = 'target' | 'filters';
+
+export type NormalizedInputOptions = Pick<
+  InputOptions,
+  PreservedInputOptionsKeys
+> &
+  Required<Omit<InputOptions, PreservedInputOptionsKeys>>;
 
 export type OutputClientFunc = (
   clients: GeneratorClients,
@@ -205,6 +205,7 @@ export type OutputOptions = {
   urlEncodeParameters?: boolean;
   unionAddMissingProperties?: boolean;
   optionsParamRequired?: boolean;
+  removeUnusedSchemas?: boolean;
 };
 
 export type SwaggerParserOptions = Omit<SwaggerParser.Options, 'validate'> & {
