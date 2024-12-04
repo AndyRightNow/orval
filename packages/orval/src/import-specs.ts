@@ -69,6 +69,7 @@ export const importSpecs = async (
       output,
       target: workspace,
       workspace,
+      removeUnusedSchemas: options.output.removeUnusedSchemas,
     });
   }
 

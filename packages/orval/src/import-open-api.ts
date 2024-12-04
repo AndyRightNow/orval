@@ -27,10 +27,18 @@ export const importOpenApi = async ({
   output,
   target,
   workspace,
+  removeUnusedSchemas,
 }: ImportOpenApi): Promise<WriteSpecsBuilder> => {
   const specs = await generateInputSpecs({ specs: data, input, workspace });
 
-  const schemas = getApiSchemas({ input, output, target, workspace, specs });
+  const schemas = getApiSchemas({
+    input,
+    output,
+    target,
+    workspace,
+    specs,
+    removeUnusedSchemas,
+  });
 
   const api = await getApiBuilder({
     input,
@@ -97,13 +105,14 @@ const getApiSchemas = ({
   target,
   workspace,
   specs,
+  removeUnusedSchemas,
 }: {
   input: InputOptions;
   output: NormalizedOutputOptions;
   workspace: string;
   target: string;
   specs: Record<string, OpenAPIObject>;
-}) => {
+} & Pick<NormalizedOutputOptions, 'removeUnusedSchemas'>) => {
   return Object.entries(specs).reduce(
     (acc, [specKey, spec]) => {
       const context: ContextSpecs = {

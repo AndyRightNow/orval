@@ -599,7 +599,7 @@ export type ImportOpenApi = {
   output: NormalizedOutputOptions;
   target: string;
   workspace: string;
-};
+} & Pick<NormalizedOutputOptions, 'removeUnusedSchemas'>;
 
 export interface ContextSpecs {
   specKey: string;
